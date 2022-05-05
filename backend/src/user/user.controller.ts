@@ -22,22 +22,22 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) userId: number) {
+  findOne(@Param('id') userId: string) {
     return this.userService.findOne(userId);
   }
 
   @Post()
   create(@Body() dto: CreateUserDto) {
-    return this.userService.createUser(dto);
+    return this.userService.create(dto);
   }
 
   @Patch(':id')
-  edit(@Param('id', ParseIntPipe) userId: number, @Body() dto: EditUserDto) {
+  edit(@Param('id') userId: string, @Body() dto: EditUserDto) {
     return this.userService.editUser(userId, dto);
   }
 
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) userId: number) {
+  delete(@Param('id') userId: string) {
     return this.userService.deleteUser(userId);
   }
 }

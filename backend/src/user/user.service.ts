@@ -1,44 +1,47 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EditUserDto } from './dto/edit-user.dto';
+import * as argon from 'argon2';
 
 @Injectable()
 export class UserService {
-  private users: { uid: number; name: string }[] = [];
+  constructor(private prisma: PrismaService) {}
   async findMany() {
-    return this.users;
+    return this.prisma.user.findMany();
   }
 
-  async findOne(id: number) {
-    return this.users.find((user) => user.uid === id);
-  }
-
-  async createUser(body: CreateUserDto) {
-    const newUser = {
-      uid: this.users.length + 1,
-      ...body,
-    };
-    this.users.push(newUser);
-    return newUser;
-  }
-
-  async editUser(id: number, body: EditUserDto) {
-    let currentUser = {
-      name: '',
-      uid: null,
-    };
-    this.users.forEach((user) => {
-      if (user.uid === id) {
-        user.name = body.name;
-        currentUser = user;
-      }
+  async findOne(id: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        id,
+      },
     });
-    return currentUser;
   }
 
-  async deleteUser(id: number) {
-    const deletedUser = this.users.find(({ uid }) => uid === id);
-    this.users.filter(({ uid }) => uid === deletedUser.uid);
-    return `User ${deletedUser.name} was successfully deleted`;
+  async create(dto: CreateUserDto) {
+    const defaultHash = await argon.hash('test123');
+    const { hash, ...user } = await this.prisma.user.create({
+      data: { hash: defaultHash, ...dto },
+    });
+    return user;
+  }
+
+  async editUser(id: string, body: EditUserDto) {
+    const user = await this.prisma.user.update({
+      where: {
+        id,
+      },
+    });
+    return user;
+  }
+
+  async deleteUser(id: string) {
+    const user = await this.prisma.user.delete({
+      where: {
+        id,
+      },
+    });
+    return `User ${user.firstName} ${user.lastName} was successfully deleted`;
   }
 }
