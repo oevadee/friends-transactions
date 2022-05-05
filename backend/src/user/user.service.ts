@@ -8,15 +8,17 @@ import * as argon from 'argon2';
 export class UserService {
   constructor(private prisma: PrismaService) {}
   async findMany() {
-    return this.prisma.user.findMany();
+    const user = await this.prisma.user.findMany();
+    return user;
   }
 
   async findOne(id: string) {
-    return this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: {
         id,
       },
     });
+    return user;
   }
 
   async create(dto: CreateUserDto) {
@@ -27,10 +29,13 @@ export class UserService {
     return user;
   }
 
-  async editUser(id: string, body: EditUserDto) {
+  async editUser(id: string, dto: EditUserDto) {
     const user = await this.prisma.user.update({
       where: {
         id,
+      },
+      data: {
+        ...dto,
       },
     });
     return user;
