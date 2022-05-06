@@ -14,33 +14,41 @@ export class UserService {
   }
 
   async findOne(id: string) {
-    const { hash, ...user } = await this.prisma.user.findUnique({
-      where: {
-        id,
-      },
-    });
+    const { hash, ...user } =
+      await this.prisma.user.findUnique({
+        where: {
+          id,
+        },
+      });
     return user;
   }
 
   async create(dto: CreateUserDto) {
     const defaultHash = await argon.hash('glaveyard123');
-    const { hash, ...user } = await this.prisma.user.create({
-      data: { hash: defaultHash, ...dto },
-    });
+    const { hash, ...user } = await this.prisma.user.create(
+      {
+        data: { hash: defaultHash, ...dto },
+      }
+    );
     return user;
   }
 
-  async edit(id: string, { password, ...dto }: EditUserDto) {
+  async edit(
+    id: string,
+    { password, ...dto }: EditUserDto
+  ) {
     const newHash = await argon.hash(password);
-    const { hash, ...user } = await this.prisma.user.update({
-      where: {
-        id,
-      },
-      data: {
-        ...dto,
-        hash: newHash,
-      },
-    });
+    const { hash, ...user } = await this.prisma.user.update(
+      {
+        where: {
+          id,
+        },
+        data: {
+          ...dto,
+          hash: newHash,
+        },
+      }
+    );
     return user;
   }
 

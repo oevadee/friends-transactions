@@ -33,7 +33,10 @@ export class UserController {
   }
 
   @Patch(':id')
-  edit(@Param('id') userId: string, @Body() dto: EditUserDto) {
+  edit(
+    @Param('id') userId: string,
+    @Body() dto: EditUserDto
+  ) {
     return this.userService.edit(userId, dto);
   }
 
