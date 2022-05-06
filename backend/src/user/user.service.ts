@@ -30,24 +30,26 @@ export class UserService {
     return user;
   }
 
-  async edit(id: string, dto: EditUserDto) {
-    const user = await this.prisma.user.update({
+  async edit(id: string, { password, ...dto }: EditUserDto) {
+    const newHash = await argon.hash(password);
+    const { hash, ...user } = await this.prisma.user.update({
       where: {
         id,
       },
       data: {
         ...dto,
+        hash: newHash,
       },
     });
     return user;
   }
 
   async delete(id: string) {
-    const user = await this.prisma.user.delete({
+    const { username } = await this.prisma.user.delete({
       where: {
         id,
       },
     });
-    return `User ${user.username} was successfully deleted`;
+    return `User ${username} was successfully deleted`;
   }
 }
