@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EditUserDto } from './dto/edit-user.dto';
 import * as argon from 'argon2';
@@ -7,13 +7,14 @@ import * as argon from 'argon2';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
+
   async findMany() {
-    const user = await this.prisma.user.findMany();
-    return user;
+    const users = await this.prisma.user.findMany();
+    return users.map(({ hash, ...user }) => user);
   }
 
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({
+    const { hash, ...user } = await this.prisma.user.findUnique({
       where: {
         id,
       },
@@ -22,14 +23,14 @@ export class UserService {
   }
 
   async create(dto: CreateUserDto) {
-    const defaultHash = await argon.hash('test123');
+    const defaultHash = await argon.hash('glaveyard123');
     const { hash, ...user } = await this.prisma.user.create({
       data: { hash: defaultHash, ...dto },
     });
     return user;
   }
 
-  async editUser(id: string, dto: EditUserDto) {
+  async edit(id: string, dto: EditUserDto) {
     const user = await this.prisma.user.update({
       where: {
         id,
@@ -41,12 +42,12 @@ export class UserService {
     return user;
   }
 
-  async deleteUser(id: string) {
+  async delete(id: string) {
     const user = await this.prisma.user.delete({
       where: {
         id,
       },
     });
-    return `User ${user.firstName} ${user.lastName} was successfully deleted`;
+    return `User ${user.username} was successfully deleted`;
   }
 }

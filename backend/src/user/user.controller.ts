@@ -3,8 +3,9 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -14,7 +15,7 @@ import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private userService: UserService) {}
 
   @Get()
   findMany() {
@@ -33,11 +34,12 @@ export class UserController {
 
   @Patch(':id')
   edit(@Param('id') userId: string, @Body() dto: EditUserDto) {
-    return this.userService.editUser(userId, dto);
+    return this.userService.edit(userId, dto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   delete(@Param('id') userId: string) {
-    return this.userService.deleteUser(userId);
+    return this.userService.delete(userId);
   }
 }

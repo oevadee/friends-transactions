@@ -2,12 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 @Injectable()
-export class CreateUserDto {
+export class AuthDto {
   @IsString()
   @IsNotEmpty()
-  username: string;
+  firstName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  lastName: string;
 
   @IsEmail()
   @IsNotEmpty()
   email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 }
