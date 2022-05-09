@@ -17,7 +17,8 @@ model User {
   username String @unique
   email String @unique
   hash String
-  transactions Transaction[]
+  transactionsReceived Transaction[] @relation("receiver")
+  transactionsSent Transaction[] @relation("sender")
   @@map("users")
 }
 
@@ -25,9 +26,11 @@ model Transaction {
   id String @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  title String
-  description String?
-  userId String
-  user User @relation(fields: [userId], references: [id])
+  amount Int
+  description String
+  receiverId String
+  receiver User @relation("receiver", fields: [receiverId], references: [id])
+  senderId String
+  sender User @relation("sender", fields: [senderId], references: [id])
   @@map("transactions")
 }
